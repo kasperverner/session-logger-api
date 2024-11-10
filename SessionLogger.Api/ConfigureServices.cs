@@ -30,7 +30,7 @@ public static class ConfigureServices
             .AddSwagger()
             .AddLogging()
             .AddServices()
-            // .AddValidation()
+            .AddValidation()
             .AddProblemDetails()
             .AddDbContext();
         
