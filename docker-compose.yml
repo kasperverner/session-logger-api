@@ -1,0 +1,10 @@
+﻿services:
+  sessionlogger.api:
+    image: sessionlogger.api
+    build:
+      context: .
+      dockerfile: SessionLogger.Api/Dockerfile
+    environment:
+      - ConnectionStrings__SessionLogger=
+      - JWT__Authority=
+      - JWT__Audience=
