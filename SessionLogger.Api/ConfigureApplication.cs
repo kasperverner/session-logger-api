@@ -1,4 +1,5 @@
-﻿using SessionLogger.Customers;
+﻿using Scalar.AspNetCore;
+using SessionLogger.Customers;
 using SessionLogger.Filters;
 using SessionLogger.Projects;
 using SessionLogger.Sessions;
@@ -15,10 +16,14 @@ public static class ConfigureApplication
     /// <returns>A <see cref="WebApplication"/> that can be used to further customize the application.</returns>
     public static WebApplication Configure(this WebApplication application)
     {
-        application.UseSwagger();
-        application.UseSwaggerUI(c =>
+        application.MapOpenApi();
+        application.MapScalarApiReference(options =>
         {
-            c.SupportedSubmitMethods([]);
+            options
+                .WithTitle("Session Logger API")
+                .WithTestRequestButton(false)
+                .WithEndpointPrefix("openapi/{documentName}")
+                .WithTheme(ScalarTheme.Moon);
         });
 
         application.UseHttpsRedirection();

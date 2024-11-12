@@ -107,10 +107,16 @@ public static class ConfigureServices
     /// <returns>A <see cref="WebApplicationBuilder"/> that can be used to further customize the application.</returns>
     private static WebApplicationBuilder AddSwagger(this WebApplicationBuilder builder)
     {
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen(options =>
+        builder.Services.AddOpenApi(options =>
         {
-            options.CustomSchemaIds(type => type.FullName?.Replace('+', '.'));
+            options.AddDocumentTransformer((document, _, _) =>
+            {
+                document.Info.Title = "Session Logger API";
+                document.Info.Description = "An API for managing projects, tasks and sessions.";
+                document.Info.Version = "v1";
+
+                return Task.CompletedTask;
+            });
         });
         
         return builder;
