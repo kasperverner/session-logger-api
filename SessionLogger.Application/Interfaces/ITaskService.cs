@@ -10,6 +10,7 @@ public interface ITaskService
     Task<bool> TaskExistsAsync(Guid taskId, Guid userId, CancellationToken ct);
     Task<bool> TaskExistsAsync(Guid projectId, string name, CancellationToken ct);
     Task<bool> TaskExistsAsync(Guid projectId, string name, Guid taskId, CancellationToken ct);
+    Task<bool> TaskExistsAsync(Guid[] projectIds, Guid taskId, CancellationToken ct);
     
     Task<TaskResponse> CreateTaskAsync(CreateTaskRequest request, CancellationToken ct);
     Task<TaskResponse> GetTaskAsync(Guid taskId, CancellationToken ct);

@@ -19,7 +19,6 @@ public class UpdateUser : IEndpoint
             .WithRequestValidation<UpdateUserRequest>()
             .WithResponse();
     
-    
     public class RequestValidator : AbstractValidator<UpdateUserRequest>
     {
         public RequestValidator(IUserService userService)

@@ -4,6 +4,7 @@ using SessionLogger.Comments;
 using SessionLogger.Exceptions;
 using SessionLogger.Interfaces;
 using SessionLogger.Persistence;
+using SessionLogger.Projects;
 using SessionLogger.Tasks;
 using SessionLogger.Users;
 using Task = System.Threading.Tasks.Task;
@@ -32,12 +33,17 @@ public class TaskService(ILogger<TaskService> logger, SessionLoggerContext conte
         return await context.Tasks.AnyAsync(x => x.ProjectId == projectId && x.Name == name && x.Id != taskId, ct);
     }
 
+    public async Task<bool> TaskExistsAsync(Guid[] projectIds, Guid taskId, CancellationToken ct)
+    {
+        return await context.Tasks.AnyAsync(x => projectIds.Contains(x.ProjectId) && x.Id == taskId, ct);
+    }
+
     public async Task<TaskResponse> CreateTaskAsync(CreateTaskRequest request, CancellationToken ct)
     {
         SessionLogger.Tasks.Task task = request.Type switch
         {
-            TaskType.Completable => CreateCompletableTask(request),
-            TaskType.Recurring => CreateRecurringTask(request),
+            TaskType.Completable => await CreateCompletableTask(request, ct),
+            TaskType.Recurring => await CreateRecurringTask(request, ct),
             _ => throw new ProblemException("Invalid task type", $"Task type {request.Type} is not supported.")
         };
 
@@ -47,13 +53,23 @@ public class TaskService(ILogger<TaskService> logger, SessionLoggerContext conte
         return new TaskResponse(task.Id, task.Type, task.GetState(), task.Name, task.Description, 0, 0);
     }
     
-    private CompletableTask CreateCompletableTask(CreateTaskRequest request)
-        => new(request.ProjectId, request.Name, request.Description, request.Deadline);
+    private async Task<CompletableTask> CreateCompletableTask(CreateTaskRequest request, CancellationToken ct)
+        => new(await GetProjectAsync(request.ProjectId, ct), request.Name, request.Description, request.Deadline);
 
-    private RecurringTask CreateRecurringTask(CreateTaskRequest request)
-        => new(request.ProjectId, request.Name, request.Description);
+    private async Task<RecurringTask> CreateRecurringTask(CreateTaskRequest request, CancellationToken ct)
+        => new(await GetProjectAsync(request.ProjectId, ct), request.Name, request.Description);
     
 
+    private async Task<Project> GetProjectAsync(Guid projectId, CancellationToken ct)
+    {
+        var project = await context.Projects.FirstOrDefaultAsync(x => x.Id == projectId, ct);
+        
+        if (project is null)
+            throw new NotFoundException(nameof(Project), projectId);
+        
+        return project;
+    }
+    
     public async Task<TaskResponse> GetTaskAsync(Guid taskId, CancellationToken ct)
     {
         var task = await context.Tasks

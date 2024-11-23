@@ -25,20 +25,37 @@ public class ProjectService(ILogger<ProjectService> logger, SessionLoggerContext
     {
         return await context.Projects.AnyAsync(x => x.CustomerId == customerId && x.Name == name && x.Id != projectId, ct);
     }
+    
+    public async Task<bool> ProjectExistsAsync(Guid[] customerIds, Guid projectId, CancellationToken ct)
+    {
+        return await context.Projects.AnyAsync(x => customerIds.Contains(x.CustomerId) && x.Id == projectId, ct);
+    }
 
     public async Task<IEnumerable<ProjectResponse>> GetProjectsAsync(GetProjectsRequest request, CancellationToken ct = default)
     {
         var projectsQuery = context.Projects
+            .Include(x => x.Tasks)
             .AsNoTracking();
         
-        if (request.CustomerId.HasValue)
-            projectsQuery = projectsQuery.Where(x => x.CustomerId == request.CustomerId);
+        if (request.CustomerIds.Length > 0)
+            projectsQuery = projectsQuery.Where(x => request.CustomerIds.Contains(x.CustomerId));
+        
+        if (request.UserIds.Length > 0)
+            projectsQuery = projectsQuery
+                .Where(x => x.Tasks.Any(t => t.AssignedUsers.Any(u => request.UserIds.Contains(u.Id))));
+        
+        if (request.StartDate.HasValue)
+            projectsQuery = projectsQuery
+                .Where(x => x.Tasks.OfType<CompletableTask>().Any(t => t.Deadline >= request.StartDate));
+        
+        if (request.EndDate.HasValue)
+            projectsQuery = projectsQuery
+                .Where(x => x.Tasks.OfType<CompletableTask>().Any(t => t.Deadline <= request.EndDate));
         
         var projects = await projectsQuery
-            .Include(x => x.Tasks)
-            .Select(x => new ProjectResponse(x.Id, x.CustomerId, x.Name, x.Description, x.Tasks
+            .Select(x => new ProjectResponse(x.Id, x.CustomerId, x.State, x.Name, x.Description, x.Tasks
                 .OfType<CompletableTask>()
-                .Any(t => t.State != TaskState.Completed)))
+                .Count(t => t.State != TaskState.Completed)))
             .ToListAsync(ct);
 
         return projects;
@@ -49,9 +66,9 @@ public class ProjectService(ILogger<ProjectService> logger, SessionLoggerContext
         var project = await context.Projects
             .AsNoTracking()
             .Include(x => x.Tasks)
-            .Select(x => new ProjectResponse(x.Id, x.CustomerId, x.Name, x.Description, x.Tasks
+            .Select(x => new ProjectResponse(x.Id, x.CustomerId, x.State, x.Name, x.Description, x.Tasks
                 .OfType<CompletableTask>()
-                .Any(t => t.State != TaskState.Completed)))
+                .Count(t => t.State != TaskState.Completed)))
             .FirstOrDefaultAsync(x => x.Id == projectId, ct);
         
         if (project is null)
@@ -69,7 +86,7 @@ public class ProjectService(ILogger<ProjectService> logger, SessionLoggerContext
         
         logger.LogInformation("Created project {ProjectId}/{ProjectName}", project.Id, project.Name);
         
-        return new ProjectResponse(project.Id, project.CustomerId, project.Name, project.Description, false);
+        return new ProjectResponse(project.Id, project.CustomerId, project.State, project.Name, project.Description, 0);
     }
 
     public async Task UpdateProjectAsync(UpdateProjectRequest request, CancellationToken ct = default)

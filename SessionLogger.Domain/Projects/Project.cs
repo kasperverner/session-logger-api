@@ -12,11 +12,13 @@ public class Project : Entity
     {
         Id = Guid.NewGuid();
         CustomerId = customerId;
+        State = ProjectState.Open;
         Name = name;
         Description = description;
     }
     
     public Guid CustomerId { get; init; }
+    public ProjectState State { get; private set; }
     public string Name { get; private set; }
     public string? Description { get; private set; }
     public IList<Task> Tasks { get; init; } = new List<Task>();
@@ -38,8 +40,8 @@ public class Project : Entity
     }
     
     public void AddCompletableTask(string name, string? description = null, DateTime? deadline = null)
-        => Tasks.Add(new CompletableTask(Id, name, description, deadline));
+        => Tasks.Add(new CompletableTask(this, name, description, deadline));
     
     public void AddRecurringTask(string name, string? description = null)
-        => Tasks.Add(new RecurringTask(Id, name, description));
+        => Tasks.Add(new RecurringTask(this, name, description));
 }

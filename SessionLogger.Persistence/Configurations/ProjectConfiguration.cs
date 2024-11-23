@@ -17,7 +17,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.HasIndex(x => new { x.CustomerId, x.Name }).IsUnique();
         
         builder.HasMany(x => x.Tasks)
-            .WithOne()
+            .WithOne(x => x.Project)
             .HasForeignKey(x => x.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
         

@@ -1,3 +1,4 @@
+using SessionLogger.Projects;
 using SessionLogger.Users;
 
 namespace SessionLogger.Tasks;
@@ -6,15 +7,17 @@ public abstract class Task : Entity
 {
     protected Task() { }
 
-    public Task(Guid projectId, string name, string? description = null)
+    public Task(Project project, string name, string? description = null)
     {
         Id = Guid.NewGuid();
-        ProjectId = projectId;
+        ProjectId = project.Id;
+        Project = project;
         Name = name;
         Description = description;
     }
     
     public Guid ProjectId { get; init; }
+    public Project Project { get; init; }
     
     public TaskType Type { get; init; }
     public string Name { get; private set; }

@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SessionLogger.Exceptions;
@@ -20,38 +21,76 @@ public class SessionService(ILogger<SessionService> logger, SessionLoggerContext
         return await context.Sessions.OfType<ProjectSession>().AnyAsync(s => s.Id == sessionId && s.State == state, ct);
     }
 
-    public async Task<IEnumerable<SessionResponse>> GetSessionsAsync(CancellationToken ct)
+    public async Task<IEnumerable<SessionResponse>> GetSessionsAsync(GetSessionsRequest request, CancellationToken ct)
     {
-        var sessionsQuery = await GetSessionQuery(ct);
-     
-        var sessions = await sessionsQuery.ToListAsync(ct);
+        var sessionsQuery = context.Sessions
+            .AsTracking();
+        
+        if (request.CustomerIds.Length > 0)
+            sessionsQuery = sessionsQuery
+                .OfType<ProjectSession>()
+                .Where(x => request.CustomerIds.Contains(x.Task.Project.CustomerId));;
+        
+        if (request.ProjectIds.Length > 0)
+            sessionsQuery = sessionsQuery
+                .OfType<ProjectSession>()
+                .Where(x => request.ProjectIds.Contains(x.Task.ProjectId));
+        
+        if (request.TaskIds.Length > 0)
+            sessionsQuery = sessionsQuery
+                .OfType<ProjectSession>()
+                .Where(x => request.TaskIds.Contains(x.TaskId));
+
+        if (request.UserIds.Length > 0)
+        {
+            var authenticatedUser = await userService.GetAuthorizedUserAsync(ct);
+        
+            if (request.UserIds.Any(id => id != authenticatedUser.Id) && !authenticatedUser.Roles.HasFlag(Role.Manager))
+                throw new ForbiddenAccessException("User is not authorized to view the sessions for the selected users.");
+            
+            sessionsQuery = sessionsQuery
+                .Where(x => request.UserIds.Contains(x.UserId));
+        }
+            
+        
+        if (request.StartDate.HasValue)
+            sessionsQuery = sessionsQuery
+                .Where(x => x.Period.StartDate >= request.StartDate);
+        
+        if (request.EndDate.HasValue)
+            sessionsQuery = sessionsQuery
+                .Where(x => x.Period.EndDate <= request.EndDate);
+        
+        var sessionsResponseQuery = await GetSessionsResponseQuery(sessionsQuery, ct);
+        
+        var sessions = await sessionsResponseQuery.ToListAsync(ct);
         
         return sessions;
     }
 
     public async Task<SessionResponse> GetSessionAsync(Guid sessionId, CancellationToken ct)
     {
-        var sessionsQuery = await GetSessionQuery(ct);
+        var sessionsQuery = context.Sessions
+            .AsTracking()
+            .Where(x => x.Id == sessionId);
+        
+        var sessionsResponseQuery = await GetSessionsResponseQuery(sessionsQuery, ct);
      
-        var session = await sessionsQuery.FirstOrDefaultAsync(x => x.Id == sessionId, ct);
+        var session = await sessionsResponseQuery.FirstOrDefaultAsync(ct);
         
         if (session is null)
             throw new NotFoundException(nameof(Session), sessionId);
         
+        var authenticatedUser = await userService.GetAuthorizedUserAsync(ct);
+        
+        if (session.UserId != authenticatedUser.Id && !authenticatedUser.Roles.HasFlag(Role.Manager))
+            throw new ForbiddenAccessException("User is not authorized to view the session.");
+        
         return session;
     }
     
-    private async Task<IQueryable<SessionResponse>> GetSessionQuery(CancellationToken ct)
+    private async Task<IQueryable<SessionResponse>> GetSessionsResponseQuery(IQueryable<Session> sessionsQuery, CancellationToken ct)
     {
-        var sessionsQuery = context.Sessions
-            .AsNoTracking();
-        
-        var authenticatedUser = await userService.GetAuthorizedUserAsync(ct);
-        
-        if (!authenticatedUser.Roles.HasFlag(Role.Manager))
-            sessionsQuery = sessionsQuery
-                .Where(x => x.UserId == authenticatedUser.Id);
-        
         var projectSessionsQuery = sessionsQuery
             .OfType<ProjectSession>()
             .Include(s => s.Task)

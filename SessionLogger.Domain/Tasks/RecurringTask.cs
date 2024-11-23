@@ -1,3 +1,5 @@
+using SessionLogger.Projects;
+
 namespace SessionLogger.Tasks;
 
 public class RecurringTask : Task
@@ -7,7 +9,7 @@ public class RecurringTask : Task
         Type = TaskType.Recurring;
     }
 
-    public RecurringTask(Guid projectId, string name, string? description = null) : base(projectId, name, description)
+    public RecurringTask(Project project, string name, string? description = null) : base(project, name, description)
     {
         Type = TaskType.Recurring;
     }

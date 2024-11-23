@@ -24,16 +24,6 @@ public class UserService(ILogger<UserService> logger, SessionLoggerContext conte
     {
         return context.Users.AnyAsync(x => x.Id == userId && x.Roles.HasFlag(roles), ct);
     }
-
-    public Task<bool> UserNameExistsAsync(string name, Guid userId, CancellationToken ct)
-    {
-        return context.Users.AnyAsync(x => x.Name == name && x.Id != userId, ct);
-    }
-
-    public Task<bool> UserEmailExistsAsync(string email, Guid userId, CancellationToken ct)
-    {
-        return context.Users.AnyAsync(x => x.Email == email && x.Id != userId, ct);
-    }
     
     public async Task<IEnumerable<UserResponse>> GetUsersAsync(CancellationToken ct)
     {

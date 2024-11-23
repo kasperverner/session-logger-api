@@ -20,6 +20,10 @@ public class TaskConfiguration : IEntityTypeConfiguration<Task>
         builder.HasDiscriminator(x => x.Type)
             .HasValue<CompletableTask>(TaskType.Completable)
             .HasValue<RecurringTask>(TaskType.Recurring);
+        
+        builder.HasOne(x => x.Project)
+            .WithMany(x => x.Tasks)
+            .HasForeignKey(x => x.ProjectId);
 
         builder.HasMany(x => x.Comments)
             .WithOne()
