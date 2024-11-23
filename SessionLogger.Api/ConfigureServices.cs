@@ -8,10 +8,10 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Core;
 using SessionLogger.Exceptions;
-using SessionLogger.Infrastructure;
 using SessionLogger.Infrastructure.Services;
 using SessionLogger.Interfaces;
 using SessionLogger.Persistence;
+using IAuthorizationService = SessionLogger.Interfaces.IAuthorizationService;
 
 namespace SessionLogger;
 
@@ -127,7 +127,7 @@ public static class ConfigureServices
     /// </summary>
     /// <param name="builder">The <see cref="WebApplicationBuilder"/> to add the services to.</param>
     /// <returns>A <see cref="WebApplicationBuilder"/> that can be used to further customize the application.</returns>
-    public static WebApplicationBuilder AddLogging(this WebApplicationBuilder builder)
+    private static WebApplicationBuilder AddLogging(this WebApplicationBuilder builder)
     {
         Logger logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
@@ -147,6 +147,7 @@ public static class ConfigureServices
     /// <returns>A <see cref="WebApplicationBuilder"/> that can be used to further customize the application.</returns>
     private static WebApplicationBuilder AddServices(this WebApplicationBuilder builder)
     {
+        builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
         builder.Services.AddScoped<ICustomerService, CustomerService>();
         builder.Services.AddScoped<IProjectService, ProjectService>();
         builder.Services.AddScoped<ISessionService, SessionService>();
@@ -191,13 +192,13 @@ public static class ConfigureServices
         
         return builder;
     }
-    
+
     /// <summary>
     /// Add and configure the database context to the dependency injection container.
     /// </summary>
     /// <param name="builder">The <see cref="WebApplicationBuilder"/> to add the services to.</param>
     /// <returns>A <see cref="WebApplicationBuilder"/> that can be used to further customize the application.</returns>
-    private static WebApplicationBuilder AddDbContext(this WebApplicationBuilder builder)
+    private static void AddDbContext(this WebApplicationBuilder builder)
     {
         string connectionString = builder.Configuration.GetConnectionString("SessionLogger")!;
         
@@ -207,7 +208,5 @@ public static class ConfigureServices
                 .UseNpgsql(connectionString)
                 .UseSnakeCaseNamingConvention();
         });
-        
-        return builder;
     }
 }

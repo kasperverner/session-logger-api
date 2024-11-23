@@ -9,6 +9,12 @@ public class User : Entity
     
     public User(Guid principalId, string name, string email)
     {
+        if (principalId == Guid.Empty)
+            throw new ArgumentException("PrincipalId cannot be empty.", nameof(principalId));
+
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(email);
+        
         PrincipalId = principalId;
         Name = name;
         Email = email;
@@ -26,6 +32,8 @@ public class User : Entity
 
     public void UpdateName(string name)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        
         if (Name == name)
             return;
         
@@ -34,6 +42,8 @@ public class User : Entity
 
     public void UpdateEmail(string email)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(email);
+        
         if (Email == email)
             return;
         

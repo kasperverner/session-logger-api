@@ -8,6 +8,8 @@ public class Customer : Entity
     
     public Customer(string name)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        
         Id = Guid.NewGuid();
         Name = name;
     }
@@ -18,6 +20,8 @@ public class Customer : Entity
 
     public void UpdateName(string name)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        
         if (Name == name)
             return;
         

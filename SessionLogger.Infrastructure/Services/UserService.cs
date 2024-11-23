@@ -10,7 +10,7 @@ using SessionLogger.Users;
 
 namespace SessionLogger.Infrastructure.Services;
 
-public class UserService(ILogger<UserService> logger, SessionLoggerContext context, IHttpContextAccessor contextAccessor, IMemoryCache cache) : IUserService
+public class UserService(ILogger<UserService> logger, SessionLoggerContext context, IAuthorizationService authorizationService, IMemoryCache cache) : IUserService
 {
     private const string UserCacheKeyPrefix = "User_";
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(15);
@@ -57,7 +57,7 @@ public class UserService(ILogger<UserService> logger, SessionLoggerContext conte
     
     public async Task<UserResponse> GetAuthorizedUserAsync(CancellationToken ct)
     {
-        var principalId = contextAccessor.HttpContext?.User.GetPrincipalId()!;
+        var principalId = authorizationService.GetAuthorizedUserPrincipalId();
         
         var cacheKey = $"{UserCacheKeyPrefix}{principalId}";
         
