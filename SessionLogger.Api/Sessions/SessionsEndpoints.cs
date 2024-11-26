@@ -1,4 +1,5 @@
 using SessionLogger.Extensions;
+using SessionLogger.Filters.Parameters;
 
 namespace SessionLogger.Sessions;
 
@@ -11,6 +12,7 @@ public static class SessionsEndpoints
             .MapEndpoint<GetSessions>()
             .MapEndpoint<CreateSession>()
             .MapGroup("/{sessionId:guid}")
+            .AddEndpointFilter<SessionIdFromRouteFilter>()
             .MapEndpoint<GetSession>()
             .MapEndpoint<UpdateSession>()
             .MapEndpoint<DeleteSession>();

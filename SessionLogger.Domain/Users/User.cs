@@ -1,4 +1,6 @@
-﻿using SessionLogger.Sessions;
+﻿using SessionLogger.Common;
+using SessionLogger.Schedules;
+using SessionLogger.Sessions;
 using Task = SessionLogger.Tasks.Task;
 
 namespace SessionLogger.Users;
@@ -26,9 +28,11 @@ public class User : Entity
     public string Email { get; private set; }
     public Role Roles { get; private set; }
     
-    public IList<OptOut> OptOuts { get; init; } = new List<OptOut>();
+    public Guid? DepartmentId { get; private set; }
+    public Department? Department { get; private set; }
     public IList<Session> Sessions { get; init; } = new List<Session>();
     public IList<Task> AssignedTasks { get; init; } = new List<Task>();
+    public IList<UserSchedule> Schedule { get; init; } = new List<UserSchedule>();
 
     public void UpdateName(string name)
     {
@@ -50,34 +54,63 @@ public class User : Entity
         Email = email;
     }
     
-    public OptOut AddOptOut(DateTime? start = null, DateTime? end = null)
+    public void AssignDepartment(Department department)
     {
-        EndOpenOptOuts();
+        if (DepartmentId == department.Id)
+            return;
         
-        var optOut = new OptOut(Id, start, end);
-        
-        OptOuts.Add(optOut);
-        
-        return optOut;
+        Department = department;
+        DepartmentId = department.Id;
+    }
+    
+    public void RemoveDepartment()
+    {
+        Department = null;
+        DepartmentId = null;
     }
 
-    public void EndOpenOptOuts(DateTime? end = null)
+    public void AddSession(Session session)
     {
-        var openOptOuts = OptOuts.Where(x => !x.Period.EndDate.HasValue);
+        if (Sessions.Contains(session))
+            return;
         
-        foreach (var optOut in openOptOuts)
-            optOut.EndOptOut();
+        Sessions.Add(session);
     }
-
-    public void AddCheckInSession(DateTime? start = null, DateTime? end = null)
-        => Sessions.Add(new CheckInSession(Id, start, end));
-
-    public void AddProjectSession(Task task, string? description = null, DateTime? start = null, DateTime? end = null)
-        => Sessions.Add(new ProjectSession(Id, task, description, start, end));
 
     public void AssignRoles(Role roles)
         => Roles = roles;
-    
+
     public void AssignTask(Task task)
-        => AssignedTasks.Add(task);
+    {
+        if (AssignedTasks.Contains(task))
+            return;
+        
+        AssignedTasks.Add(task);
+    }
+
+    public void RemoveTask(Task task)
+    {
+        if (!AssignedTasks.Contains(task))
+            return;
+        
+        AssignedTasks.Remove(task);
+    }
+    
+    public void AddSchedule(UserSchedule userSchedule)
+    {
+        if (Schedule.Contains(userSchedule))
+            return;
+        
+        if (Schedule.Any(s => s.Period.Overlaps(userSchedule.Period)))
+            throw new InvalidOperationException("User already has a schedule that overlaps with the provided schedule.");
+        
+        Schedule.Add(userSchedule);
+    }
+    
+    public void AddSchedule(Period period, AbsenceType absenceType)
+    {
+        var userSchedule = new UserSchedule(period, this, absenceType);
+        
+        AddSchedule(userSchedule);
+    }
 }

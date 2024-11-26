@@ -16,14 +16,22 @@ public class ProjectService(ILogger<ProjectService> logger, SessionLoggerContext
         return await context.Projects.AnyAsync(x => x.Id == projectId, ct);
     }
 
+    public async Task<bool> ProjectExistsAsync(string name, Guid projectId, CancellationToken ct)
+    {
+        return await context.Projects
+            .Where(p => p.Id == projectId)
+            .Join(
+                context.Projects,
+                existing => existing.CustomerId,
+                other => other.CustomerId,
+                (existing, other) => other.Name == name && other.Id != projectId
+            )
+            .AnyAsync(result => result, ct);
+    }
+    
     public async Task<bool> ProjectExistsAsync(Guid customerId, string name, CancellationToken ct)
     {
         return await context.Projects.AnyAsync(x => x.CustomerId == customerId && x.Name == name, ct);
-    }
-
-    public async Task<bool> ProjectExistsAsync(Guid customerId, string name, Guid projectId, CancellationToken ct)
-    {
-        return await context.Projects.AnyAsync(x => x.CustomerId == customerId && x.Name == name && x.Id != projectId, ct);
     }
     
     public async Task<bool> ProjectExistsAsync(Guid[] customerIds, Guid projectId, CancellationToken ct)
@@ -91,10 +99,10 @@ public class ProjectService(ILogger<ProjectService> logger, SessionLoggerContext
 
     public async Task UpdateProjectAsync(UpdateProjectRequest request, CancellationToken ct = default)
     {
-        var project = await context.Projects.FirstOrDefaultAsync(x => x.Id == request.Id, ct);
+        var project = await context.Projects.FirstOrDefaultAsync(x => x.Id == request.ProjectId, ct);
         
         if (project is null)
-            throw new NotFoundException(nameof(Project), request.Id);
+            throw new NotFoundException(nameof(Project), request.ProjectId);
         
         project.UpdateName(request.Name);
         project.UpdateDescription(request.Description);

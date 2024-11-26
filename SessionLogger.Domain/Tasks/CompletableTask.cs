@@ -4,10 +4,7 @@ namespace SessionLogger.Tasks;
 
 public class CompletableTask : Task
 {
-    private CompletableTask()
-    {
-        Type = TaskType.Completable;
-    }
+    private CompletableTask() { }
     
     public CompletableTask(Project project, string name, string? description = null, DateTime? deadline = null) : base(project, name, description)
     {

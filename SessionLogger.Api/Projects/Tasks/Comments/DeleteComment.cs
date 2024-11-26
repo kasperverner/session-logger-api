@@ -7,6 +7,8 @@ using SessionLogger.Users;
 
 namespace SessionLogger.Projects.Tasks.Comments;
 
+// TODO: Modify
+
 public class DeleteComment : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder application)

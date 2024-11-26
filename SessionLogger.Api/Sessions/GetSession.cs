@@ -7,6 +7,8 @@ using SessionLogger.Users;
 
 namespace SessionLogger.Sessions;
 
+// TODO: Modify
+
 public class GetSession : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder application)

@@ -10,7 +10,9 @@ using SessionLogger.Persistence;
 using SessionLogger.Users;
 
 namespace SessionLogger.Customers;
-    
+
+// TODO: Modify
+
 public class UpdateCustomer : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder application)

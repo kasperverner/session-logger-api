@@ -13,10 +13,17 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.Property(x => x.Name).IsRequired().HasMaxLength(120);
         builder.Property(x => x.Description).IsRequired(false).HasMaxLength(1000);
 
+        builder.Property(x => x.State).IsRequired();
+        
         builder.HasIndex(x => x.CustomerId);
         builder.HasIndex(x => new { x.CustomerId, x.Name }).IsUnique();
         
         builder.HasMany(x => x.Tasks)
+            .WithOne(x => x.Project)
+            .HasForeignKey(x => x.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasMany(x => x.Schedule)
             .WithOne(x => x.Project)
             .HasForeignKey(x => x.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);

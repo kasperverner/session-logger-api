@@ -20,4 +20,12 @@ public class Period
         
         EndDate = end ?? DateTime.UtcNow;
     }
+    
+    public bool Overlaps(Period period)
+    {
+        if (EndDate.HasValue && period.StartDate > EndDate)
+            return false;
+        
+        return !period.EndDate.HasValue || !(StartDate > period.EndDate);
+    }
 }

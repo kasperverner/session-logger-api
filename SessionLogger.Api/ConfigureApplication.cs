@@ -1,5 +1,6 @@
 ﻿using Scalar.AspNetCore;
 using SessionLogger.Customers;
+using SessionLogger.Departments;
 using SessionLogger.Filters;
 using SessionLogger.Projects;
 using SessionLogger.Sessions;
@@ -45,11 +46,12 @@ public static class ConfigureApplication
     /// <returns>A <see cref="WebApplication"/> that can be used to further customize the application.</returns>
     private static WebApplication MapEndpoints(this WebApplication application)
     {
-        application.MapGroup("")
+        application.MapGroup("api")
             .WithOpenApi()
             .AddEndpointFilter<RequestLoggingFilter>()
             .RequireAuthorization()
             .MapCustomersEndpoints()
+            .MapDepartmentsEndpoints()
             .MapProjectsEndpoints()
             .MapSessionsEndpoints()
             .MapUsersEndpoints();

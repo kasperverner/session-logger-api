@@ -4,15 +4,10 @@ namespace SessionLogger.Sessions;
 
 public class ProjectSession : Session
 {
-    private ProjectSession()
-    {
-        Type = SessionType.Project;
-    }
+    private ProjectSession() {  }
 
     public ProjectSession(Guid userId, Task task, string? description = null, DateTime? startDate = null, DateTime? endDate = null) : base(userId, startDate, endDate)
     {
-        Type = SessionType.Project;
-        
         TaskId = task.Id;
         Task = task;
         
@@ -25,6 +20,7 @@ public class ProjectSession : Session
     public Task Task { get; init; }
     public SessionState State { get; set; }
     public string? Description { get; private set; }
+    public string? CommitUrl { get; private set; }
     
     public void UpdateState(SessionState state)
     {
@@ -40,5 +36,13 @@ public class ProjectSession : Session
             return;
         
         Description = description;
+    }
+    
+    public void UpdateCommitUrl(string? commitUrl)
+    {
+        if (State == SessionState.Billed || CommitUrl == commitUrl)
+            return;
+        
+        CommitUrl = commitUrl;
     }
 }

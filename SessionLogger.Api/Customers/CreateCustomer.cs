@@ -7,7 +7,9 @@ using SessionLogger.Interfaces;
 using SessionLogger.Users;
 
 namespace SessionLogger.Customers;
-    
+
+// TODO: Modify
+
 public class CreateCustomer : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder application)

@@ -7,6 +7,7 @@ using SessionLogger.Users;
 
 namespace SessionLogger.Projects;
 
+// TODO: Modify
 
 public class GetProject : IEndpoint
 {

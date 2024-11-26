@@ -1,33 +1,44 @@
 using Serilog;
-using SessionLogger;
 
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .CreateBootstrapLogger();
+namespace SessionLogger;
 
-try
+public class Program
 {
-    Log.Information("Starting SessionLogger.Api");
+    public static async Task Main(string[] args)
+    {
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .CreateBootstrapLogger();
 
-    // Configure the application
-    WebApplicationBuilder builder = WebApplication
-        .CreateBuilder(args)
-        .Configure();
+        try
+        {
+            Log.Information("Starting SessionLogger.Api");
 
-    // Create the application
-    WebApplication application = builder
-        .Build()
-        .Configure();
-    
-    // Run the application
-    await application.RunAsync();
-} 
-catch (Exception ex)
-{
-    Log.Fatal(ex, "SessionLogger.Api terminated unexpectedly");
-} 
-finally
-{
-    Log.Information("Stopping SessionLogger.Api");
-    Log.CloseAndFlush();
+            // Configure the application
+            WebApplicationBuilder builder = WebApplication
+                .CreateBuilder(args)
+                .Configure();
+
+            // Create the application
+            WebApplication application = builder
+                .Build()
+                .Configure();
+            
+            // Run the application
+            await application.RunAsync();
+        }
+        catch(HostAbortedException ex)
+        {
+            Log.Information("Stopping SessionLogger.Api");
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "SessionLogger.Api terminated unexpectedly");
+        } 
+        finally
+        {
+            Log.Information("SessionLogger.Api stopped");
+            await Log.CloseAndFlushAsync();
+        }
+    }
 }

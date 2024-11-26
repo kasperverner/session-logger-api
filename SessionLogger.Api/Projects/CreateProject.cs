@@ -8,6 +8,8 @@ using SessionLogger.Users;
 
 namespace SessionLogger.Projects;
 
+// TODO: Modify
+
 public class CreateProject : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder application)

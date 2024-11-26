@@ -12,10 +12,12 @@ public class UserTaskConfiguration : IEntityTypeConfiguration<UserTask>
 
         builder.HasOne(x => x.User)
             .WithMany()
-            .HasForeignKey(x => x.UserId);
+            .HasForeignKey(x => x.UserId)
+            .IsRequired(false);
 
         builder.HasOne(x => x.Task)
             .WithMany()
-            .HasForeignKey(x => x.TaskId);
+            .HasForeignKey(x => x.TaskId)
+            .IsRequired(false);
     }
 }

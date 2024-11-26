@@ -57,7 +57,7 @@ public static class ConfigureServices
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidateLifetime = true,
+                    ValidateLifetime = false,
                     ValidateIssuerSigningKey = false,
                     ValidIssuer = authority,
                     ValidAudience = audience,
@@ -112,7 +112,7 @@ public static class ConfigureServices
             options.AddDocumentTransformer((document, _, _) =>
             {
                 document.Info.Title = "Session Logger API";
-                document.Info.Description = "An API for managing projects, tasks and sessions.";
+                document.Info.Description = "A MailMak API for managing projects, tasks and sessions.";
                 document.Info.Version = "v1";
 
                 return Task.CompletedTask;
@@ -200,13 +200,16 @@ public static class ConfigureServices
     /// <returns>A <see cref="WebApplicationBuilder"/> that can be used to further customize the application.</returns>
     private static void AddDbContext(this WebApplicationBuilder builder)
     {
-        string connectionString = builder.Configuration.GetConnectionString("SessionLogger")!;
+        string connectionString = builder.Configuration.GetConnectionString("syncr")!;
         
         builder.Services.AddDbContext<SessionLoggerContext>(options =>
         {
             options
-                .UseNpgsql(connectionString)
-                .UseSnakeCaseNamingConvention();
+                .UseNpgsql(connectionString, x 
+                    => x.MigrationsHistoryTable("__ef_migrations_history"));
+            
+            // TODO: Add snake_case naming convention before migrating to production
+            // options.UseSnakeCaseNamingConvention();
         });
     }
 }

@@ -8,6 +8,8 @@ using SessionLogger.Users;
 
 namespace SessionLogger.Projects.Tasks;
 
+// TODO: Modify
+
 public class GetTask : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder application)

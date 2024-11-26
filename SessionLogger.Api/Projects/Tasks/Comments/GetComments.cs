@@ -10,6 +10,8 @@ using SessionLogger.Users;
 
 namespace SessionLogger.Projects.Tasks.Comments;
 
+// TODO: Modify
+
 public class GetComments : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder application)

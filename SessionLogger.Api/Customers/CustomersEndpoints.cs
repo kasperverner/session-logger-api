@@ -1,4 +1,6 @@
+using SessionLogger.Customers.Contacts;
 using SessionLogger.Extensions;
+using SessionLogger.Filters.Parameters;
 
 namespace SessionLogger.Customers;
 
@@ -11,9 +13,11 @@ public static class CustomersEndpoints
             .MapEndpoint<GetCustomers>()
             .MapEndpoint<CreateCustomer>()
             .MapGroup("/{customerId:guid}")
+            .AddEndpointFilter<CustomerIdFromRouteFilter>()
             .MapEndpoint<GetCustomer>()
             .MapEndpoint<UpdateCustomer>()
-            .MapEndpoint<DeleteCustomer>();
+            .MapEndpoint<DeleteCustomer>()
+            .MapContactsEndpoints();
         
         return application;
     }

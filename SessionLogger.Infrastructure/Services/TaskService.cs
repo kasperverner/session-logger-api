@@ -137,25 +137,25 @@ public class TaskService(ILogger<TaskService> logger, SessionLoggerContext conte
         await context.SaveChangesAsync(ct);
     }
 
-    public async Task AssignUserToTaskAsync(CreateUserTaskRequest request, CancellationToken ct)
-    {
-        var task = await context.Tasks.FirstOrDefaultAsync(x => x.Id == request.TaskId, ct);
-        
-        if (task is null)
-            throw new NotFoundException(nameof(SessionLogger.Tasks.Task), request.TaskId);
-        
-        var user = await context.Users.FirstOrDefaultAsync(x => x.Id == request.UserId, ct);
-        
-        if (user is null)
-            throw new NotFoundException(nameof(User), request.UserId);
-        
-        task.AssignUser(user);
-        
-        logger.LogInformation("Assigned user {UserId} to task {TaskId}", user.Id, task.Id);
-        
-        context.Tasks.Update(task);
-        await context.SaveChangesAsync(ct);
-    }
+    // public async Task AssignUserToTaskAsync(CreateUserTaskRequest request, CancellationToken ct)
+    // {
+    //     var task = await context.Tasks.FirstOrDefaultAsync(x => x.Id == request.TaskId, ct);
+    //     
+    //     if (task is null)
+    //         throw new NotFoundException(nameof(SessionLogger.Tasks.Task), request.TaskId);
+    //     
+    //     var user = await context.Users.FirstOrDefaultAsync(x => x.Id == request.UserId, ct);
+    //     
+    //     if (user is null)
+    //         throw new NotFoundException(nameof(User), request.UserId);
+    //     
+    //     task.AssignUser(user);
+    //     
+    //     logger.LogInformation("Assigned user {UserId} to task {TaskId}", user.Id, task.Id);
+    //     
+    //     context.Tasks.Update(task);
+    //     await context.SaveChangesAsync(ct);
+    // }
     
     public async Task<bool> CommentExistsAsync(Guid commentId, CancellationToken ct)
     {

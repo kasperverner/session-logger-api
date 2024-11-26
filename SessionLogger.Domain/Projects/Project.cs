@@ -1,5 +1,8 @@
+using SessionLogger.Common;
+using SessionLogger.Customers;
+using SessionLogger.Schedules;
 using SessionLogger.Tasks;
-
+using SessionLogger.Users;
 using Task = SessionLogger.Tasks.Task;
 
 namespace SessionLogger.Projects;
@@ -22,6 +25,7 @@ public class Project : Entity
     public string Name { get; private set; }
     public string? Description { get; private set; }
     public IList<Task> Tasks { get; init; } = new List<Task>();
+    public IList<ProjectSchedule> Schedule { get; init; } = new List<ProjectSchedule>();
     
     public void UpdateName(string name)
     {
@@ -44,4 +48,23 @@ public class Project : Entity
     
     public void AddRecurringTask(string name, string? description = null)
         => Tasks.Add(new RecurringTask(this, name, description));
+    
+    public ProjectSchedule? AddSchedule(ProjectSchedule projectSchedule)
+    {
+        if (Schedule.Contains(projectSchedule))
+            return null;
+        
+        if (Schedule.Any(s => s.Period.Overlaps(projectSchedule.Period) && s.Department == projectSchedule.Department))
+            throw new InvalidOperationException("Project already has a schedule for the department that overlaps with the provided schedule.");
+        
+        Schedule.Add(projectSchedule);
+        
+        return projectSchedule;
+    }
+    
+    public ProjectSchedule? AddSchedule(Period period, Department department, int approvedHours, CustomerContact? approvedBy = null)
+    {
+        var projectSchedule = new ProjectSchedule(period, this, department, approvedHours, approvedBy);
+        return AddSchedule(projectSchedule);
+    }
 }

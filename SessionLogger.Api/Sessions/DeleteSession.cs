@@ -8,6 +8,8 @@ using SessionLogger.Users;
 
 namespace SessionLogger.Sessions;
 
+// TODO: Modify
+
 public class DeleteSession : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder application)

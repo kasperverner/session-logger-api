@@ -10,6 +10,8 @@ using SessionLogger.Users;
 
 namespace SessionLogger.Projects.Tasks.Comments;
 
+// TODO: Modify
+
 public class CreateComment : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder application)
@@ -35,13 +37,12 @@ public class CreateComment : IEndpoint
     }
     
     private static async Task<CreatedAtRoute<CommentResponse>> Handle(
-        [FromRoute] Guid projectId,
         [FromBody] CreateCommentRequest request, 
         [FromServices] ITaskService taskService, 
         CancellationToken ct)
     {
         var response = await taskService.CreateCommentAsync(request, ct);
 
-        return TypedResults.CreatedAtRoute(response, "GetComments", new { projectId, taskId = request.TaskId });
+        return TypedResults.CreatedAtRoute(response, "GetComments", new { projectId = request.ProjectId, taskId = request.TaskId });
     }
 }

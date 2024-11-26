@@ -9,9 +9,7 @@ using SessionLogger.Users;
 
 namespace SessionLogger.Sessions;
 
-// - Create a new session
-// POST /sessions
-// - returns the created session dto
+// TODO: Modify
 
 public class CreateSession : IEndpoint
 {

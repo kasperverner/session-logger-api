@@ -8,6 +8,8 @@ using SessionLogger.Users;
 
 namespace SessionLogger.Projects;
 
+// TODO: Modify
+
 public class DeleteProject : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder application)
@@ -16,10 +18,8 @@ public class DeleteProject : IEndpoint
             .WithRequiredRoles(Role.Manager)
             .WithResponse();
     
-    public record Request(Guid ProjectId);
-    
     private static async Task<NoContent> Handle(
-        [AsParameters] Request request, 
+        [AsParameters] DeleteProjectRequest request, 
         [FromServices] IProjectService projectService,
         CancellationToken ct)
     {

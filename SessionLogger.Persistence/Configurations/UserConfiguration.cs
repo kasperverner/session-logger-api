@@ -16,10 +16,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(x => x.PrincipalId).IsUnique();
         builder.HasIndex(x => x.Email).IsUnique();
         
-        builder.HasMany(x => x.OptOuts)
-            .WithOne()
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(x => x.Department)
+            .WithMany(x => x.Users)
+            .HasForeignKey(x => x.DepartmentId)
+            .OnDelete(DeleteBehavior.SetNull);
         
         builder.HasMany(x => x.Sessions)
             .WithOne()
@@ -29,6 +29,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasMany(x => x.AssignedTasks)
             .WithMany(x => x.AssignedUsers)
             .UsingEntity<UserTask>();
+        
+        builder.HasMany(x => x.Schedule)
+            .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         builder.HasQueryFilter(x => !x.DeletedDate.HasValue);
     }

@@ -11,6 +11,8 @@ using SessionLogger.Users;
 
 namespace SessionLogger.Projects.Tasks.Comments;
 
+// TODO: Modify
+
 public class UpdateComment : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder application)

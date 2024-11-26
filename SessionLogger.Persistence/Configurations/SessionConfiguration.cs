@@ -17,7 +17,11 @@ public class SessionConfiguration : IEntityTypeConfiguration<Session>
             .HasValue<CheckInSession>(SessionType.CheckIn)
             .HasValue<ProjectSession>(SessionType.Project);
         
-        builder.OwnsOne<Period>(x => x.Period);
+        builder.OwnsOne<Period>(x => x.Period, period =>
+        {
+            period.Property(x => x.StartDate).IsRequired();
+            period.Property(x => x.EndDate).IsRequired(false);
+        });
         
         builder.HasQueryFilter(x => !x.DeletedDate.HasValue);
     }
@@ -27,6 +31,7 @@ public class ProjectSessionConfiguration : IEntityTypeConfiguration<ProjectSessi
 {
     public void Configure(EntityTypeBuilder<ProjectSession> builder)
     {
-        builder.Property(x => x.Description).HasMaxLength(1000); 
+        builder.Property(x => x.Description).IsRequired(false).HasMaxLength(1000); 
+        builder.Property(x => x.CommitUrl).IsRequired(false).HasMaxLength(1000);
     }
 }

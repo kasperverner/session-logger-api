@@ -16,14 +16,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SessionLogger.Infrastructur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SessionLogger.Persistence", "SessionLogger.Persistence\SessionLogger.Persistence.csproj", "{4249A577-F467-43EB-9467-726F3C5ADF4B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hosts", "Hosts", "{958FEB3C-DA37-4905-BFFC-57EDFB783DCB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SessionLogger.UnitTests", "SessionLogger.UnitTests\SessionLogger.UnitTests.csproj", "{BC68E79D-26E1-4B4E-BAEF-9A4C5235F0EB}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FAF023F1-ADB4-455B-BAAF-D226F54E0E5C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SessionLogger.IntegrationTests", "SessionLogger.IntegrationTests\SessionLogger.IntegrationTests.csproj", "{28483BAB-8378-456D-A309-C5164B4FB4AD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,18 +42,7 @@ Global
 		{4249A577-F467-43EB-9467-726F3C5ADF4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4249A577-F467-43EB-9467-726F3C5ADF4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4249A577-F467-43EB-9467-726F3C5ADF4B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BC68E79D-26E1-4B4E-BAEF-9A4C5235F0EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC68E79D-26E1-4B4E-BAEF-9A4C5235F0EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BC68E79D-26E1-4B4E-BAEF-9A4C5235F0EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BC68E79D-26E1-4B4E-BAEF-9A4C5235F0EB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{28483BAB-8378-456D-A309-C5164B4FB4AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{28483BAB-8378-456D-A309-C5164B4FB4AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{28483BAB-8378-456D-A309-C5164B4FB4AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{28483BAB-8378-456D-A309-C5164B4FB4AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{B85F63CC-7072-476E-B6C0-1310EB3A0E9D} = {958FEB3C-DA37-4905-BFFC-57EDFB783DCB}
-		{BC68E79D-26E1-4B4E-BAEF-9A4C5235F0EB} = {FAF023F1-ADB4-455B-BAAF-D226F54E0E5C}
-		{28483BAB-8378-456D-A309-C5164B4FB4AD} = {FAF023F1-ADB4-455B-BAAF-D226F54E0E5C}
 	EndGlobalSection
 EndGlobal

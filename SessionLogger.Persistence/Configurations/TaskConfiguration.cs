@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SessionLogger.Tasks;
+using SessionLogger.Users;
 using Task = SessionLogger.Tasks.Task;
 
 namespace SessionLogger.Persistence.Configurations;
@@ -29,6 +30,10 @@ public class TaskConfiguration : IEntityTypeConfiguration<Task>
             .WithOne()
             .HasForeignKey(x => x.TaskId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasMany(x => x.AssignedUsers)
+            .WithMany(x => x.AssignedTasks)
+            .UsingEntity<UserTask>();
         
         builder.HasQueryFilter(x => !x.DeletedDate.HasValue);
     }

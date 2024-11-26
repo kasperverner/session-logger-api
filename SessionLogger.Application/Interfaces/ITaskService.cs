@@ -18,7 +18,7 @@ public interface ITaskService
     Task UpdateTaskAsync(UpdateTaskRequest request, CancellationToken ct);
     Task DeleteTaskAsync(Guid taskId, CancellationToken ct);
     
-    Task AssignUserToTaskAsync(CreateUserTaskRequest request, CancellationToken ct);
+    // Task AssignUserToTaskAsync(CreateUserTaskRequest request, CancellationToken ct);
 
     Task<bool> CommentExistsAsync(Guid commentId, CancellationToken ct);
     Task<CommentResponse> CreateCommentAsync(CreateCommentRequest request, CancellationToken ct);
